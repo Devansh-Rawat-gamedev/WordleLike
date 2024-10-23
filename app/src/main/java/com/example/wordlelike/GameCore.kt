@@ -78,7 +78,7 @@ class GameCore(
     }
 
     fun enter(): Boolean {
-        if (curCol == 5 && curRow <= rowCount) {
+        if (curCol == 4 && curRow < rowCount && rows[curRow].all { it != ' ' }) {
             curCol = 0
             curRow++
             if (curRow == rowCount) {
