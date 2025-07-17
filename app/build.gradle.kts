@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -43,10 +44,12 @@ android {
 }
 
 dependencies {
+    // Firebase BOM - ensures all Firebase libraries use compatible versions
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-database-ktx")
 
     implementation(platform(libs.androidx.compose.bom.v20230800))
     androidTestImplementation(platform(libs.androidx.compose.bom.v20230800))
-
 
     implementation(libs.androidx.core.ktx.v1101)
     implementation(libs.androidx.lifecycle.runtime.ktx)

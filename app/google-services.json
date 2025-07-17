@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153181843615",
+    "project_id": "wordle-like-5455a",
+    "storage_bucket": "wordle-like-5455a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153181843615:android:64c6030804b62962adf2aa",
+        "android_client_info": {
+          "package_name": "com.example.wordlelike"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEw3suP5H6Ssskxk2tUzl-GmOLmbJk71E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

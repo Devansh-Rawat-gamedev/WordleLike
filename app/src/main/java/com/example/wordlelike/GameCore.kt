@@ -48,7 +48,6 @@ class GameCore(
                 rows[row][col] = ' '
             }
         }
-        setWord()
     }
 
     fun getChar(row: Int, col: Int): Char {
@@ -106,70 +105,7 @@ class GameCore(
         return curCol
     }
 
-    fun setWord() {
-        val words = listOf<String>(
-            "APPLE",
-            "TIGER",
-            "OCEAN",
-            "ROBOT",
-            "SNAIL",
-            "PANDA",
-            "IGLOO",
-            "LEMON",
-            "MOUSE",
-            "PIZZA",
-            "CHAIR",
-            "EARTH",
-            "PIANO",
-            "RIVER",
-            "EAGLE",
-            "ZEBRA",
-            "CLOWN",
-            "CLOUD",
-            "SPOON",
-            "TRAIN",
-            "CLOCK",
-            "SHOES",
-            "SOCKS",
-            "MAGIC",
-            "COMET",
-            "WHALE",
-            "JELLY",
-            "SHIRT",
-            "LEMON",
-            "SMILE",
-            "MOUSE",
-            "ANGEL",
-            "OCEAN",
-            "ROBOT",
-            "SWORD",
-            "SUSHI",
-            "HEART",
-            "GHOST",
-            "GRAPE",
-            "HONEY",
-            "MANGO",
-            "PEACH",
-            "SNACK",
-            "JELLY",
-            "PIZZA",
-            "EAGLE",
-            "ALARM",
-            "FAIRY",
-            "CLOUD",
-            "PHONE",
-            "PLANE",
-            "WATCH",
-            "CHAIR",
-            "GRASS",
-            "HOTEL",
-            "LEMON",
-            "TIGER",
-            "WATER",
-            "PAPER",
-            "FRUIT",
-            "SWING",
-        )
-        word = words[Random.nextInt(words.size)]
+    fun setWord(wordFromDb: String) {
+        word = wordFromDb
     }
 }

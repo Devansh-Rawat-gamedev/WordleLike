@@ -9,18 +9,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
-
-
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
-    private lateinit var texts:  MutableList<MutableList<TextView>>
+    private lateinit var texts: MutableList<MutableList<TextView>>
     private val rowCount = 7
     private val colCount = 5
     private var countGames = 0
     private var countWins = 0
     private lateinit var gameCore: GameCore
-    private lateinit var btnEnter:Button;
-    private lateinit var btnErase:Button;
+    private lateinit var btnEnter: Button
+    private lateinit var btnErase: Button
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +54,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-         btnEnter = findViewById<Button>(R.id.buttonEnter)
+        btnEnter = findViewById<Button>(R.id.buttonEnter)
         btnEnter.setOnClickListener {
             if (gameCore.isPouse()) {
                 gameCore.startOver()
@@ -83,15 +86,13 @@ class MainActivity : ComponentActivity() {
                         gameCore.startOver()
                         newRound()
                     }
-                    else{
-                        Toast.makeText(this, "You Lost!", Toast.LENGTH_SHORT).show()
-                    }
+                } else {
+                    Toast.makeText(this, "You Lost!", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
 
-         btnErase = findViewById<Button>(R.id.buttonErase)
+        btnErase = findViewById<Button>(R.id.buttonErase)
         btnErase.setOnClickListener {
             if (gameCore.isPouse()) {
                 gameCore.startOver()
@@ -116,21 +117,24 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun newRound() {
-        gameCore.setWord()
-        for (row in 0 until rowCount) {
-            for (col in 0 until colCount) {
-                texts[row][col].background = ContextCompat.getDrawable(this,  R.drawable.letter_border)
-                texts[row][col].text = " "
+        fetchRandomWordFromFirebase { randomWord ->
+            gameCore.startOver()
+            gameCore.setWord(randomWord)
+
+            for (row in 0 until rowCount) {
+                for (col in 0 until colCount) {
+                    texts[row][col].background = ContextCompat.getDrawable(this, R.drawable.letter_border)
+                    texts[row][col].text = " "
+                }
             }
+            val textGames = findViewById<TextView>(R.id.games)
+            val textWins = findViewById<TextView>(R.id.wins)
+            textGames.text = "Games: $countGames"
+            textWins.text = "Wins: $countWins"
+            countGames++
+
+            Log.e("Word", "Random Word: $randomWord")
         }
-        val textGames = findViewById<TextView>(R.id.games)
-        val textWins = findViewById<TextView>(R.id.wins)
-
-        textGames.text = "Games: $countGames"
-        textWins.text = "Wins: $countWins"
-        countGames++
-
-        Log.e("Word", "=============---- ${gameCore.getFinalWord()}")
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -138,19 +142,16 @@ class MainActivity : ComponentActivity() {
             val charTyped = event.unicodeChar.toChar()
 
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                Toast.makeText(this,"pressed enter",Toast.LENGTH_SHORT).show()
+                btnEnter.performClick()
+                Toast.makeText(this, "pressed enter", Toast.LENGTH_SHORT).show()
             } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-
                 btnErase.performClick()
-                Toast.makeText(this,"pressed backspace",Toast.LENGTH_SHORT).show()
-
-            }else if (charTyped.isLetter()) {
+            } else if (charTyped.isLetter()) {
                 handleKeyPress(charTyped)
             }
         }
         return super.onKeyDown(keyCode, event)
     }
-
 
     private fun handleKeyPress(charTyped: Char) {
         val row = gameCore.getCurRow()
@@ -160,4 +161,32 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun fetchRandomWordFromFirebase(onResult: (String) -> Unit) {
+        val database = Firebase.database
+        val wordsRef = database.getReference("words")
+
+        wordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val wordList = mutableListOf<String>()
+
+                for (childSnapshot in snapshot.children) {
+                    val word = childSnapshot.getValue(String::class.java)
+                    word?.let { wordList.add(it) }
+                }
+
+                val randomWord = if (wordList.isNotEmpty()) {
+                    wordList.random()
+                } else {
+                    "APPLE" // fallback
+                }
+
+                onResult(randomWord)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching words: ${error.message}")
+                onResult("APPLE") // fallback
+            }
+        })
+    }
 }
